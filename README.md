@@ -1,188 +1,87 @@
 # 🤖 Wendy
 
-> Your personal Jarvis — clap twice, and Wendy sets up your entire workspace automatically.
+A terminal TUI for launching your stuff.
 
----
-
-## What is Wendy?
-
-Wendy is a Mac automation assistant that listens for two claps via your microphone and instantly launches your development environment. It opens your chosen apps on your dev Aerospace workspace, and plays a YouTube video in your browser on a second workspace — all hands-free. Everything is configured via a `settings.json` file.
-
----
-
-## Project Structure
+## Run
 
 ```
-wendy/
-├── main.py                  # Entry point — launches the config TUI
-├── splash.py                # Terminal splash screen shown on startup
-├── wendy.sh                 # Reads settings.json and launches everything
-├── settings.json            # Generated config: YouTube URL, workspaces, apps, browser
-├── requirements.txt         # Python dependencies
-│
-├── config/                  # Config TUI — all configuration screens
-│   ├── __init__.py
-│   ├── apps.py              # Assign default apps per category
-│   ├── colormode.py         # Switch light / dark mode
-│   ├── colorpicker.py       # Initial color mode picker on first launch
-│   ├── palette.py           # Color definitions — single source of truth
-│   └── states.py            # Manage named workspace states
-│
-├── listeners/
-│   └── clap_detector.py     # Mic input → detects 2 claps → triggers wendy.sh
-│
-├── scenes/
-│   ├── workspace1.sh        # Opens dev apps on workspace 1
-│   └── workspace9.sh        # Opens YouTube in Firefox on workspace 9
-│
-└── utils/
-    ├── aerospace.sh         # Aerospace workspace helper functions
-    └── notify.sh            # macOS notifications for Wendy feedback
-```
-
----
-
-## How It Works
-
-```
-Microphone
-   └── clap_detector.py
-         └── hears 2 claps
-               └── wendy.sh
-                     ├── reads settings.json
-                     ├── shows splash.py
-                     ├── workspace 1 → Cursor + Terminal + Finder
-                     └── workspace 9 → YouTube in Firefox
-```
-
----
-
-## Trigger Options
-
-Wendy is triggered by a **double clap** detected via your Mac's microphone. The clap detector listens for two short loud audio spikes within ~1.2 seconds of each other, with debouncing and a cooldown to prevent false triggers.
-
-A **keyboard hotkey fallback** is also recommended for noisy environments.
-
-| Method | Pros | Cons |
-|---|---|---|
-| 🎤 Mic / Clap Detection | Hands-free, cool factor | Can false-trigger in noisy rooms |
-| ⌨️ Hotkey | Reliable, zero false positives | Less hands-free |
-| 🖱️ Mouse Gesture | No accidental triggers | Must be at desk |
-| 📱 iPhone Shortcut | Works from across the room | Extra setup required |
-| ⌚ Apple Watch tap | Wrist-based, very Jarvis | Needs Watch + Shortcuts |
-
-**Recommended:** Clap detection as primary + hotkey as fallback.
-
----
-
-## Tech Stack
-
-- **Shell (Bash)** — workspace launching and app control
-- **Python** — config TUI, splash screen, and clap/audio detection via microphone
-- **Aerospace** — macOS tiling window manager for workspace switching
-- `curses` — terminal UI for the config screens
-- `sounddevice` — real-time microphone input
-- `numpy` — audio amplitude spike detection
-
----
-
-## Configuration
-
-Wendy reads all settings from `settings.json` at launch. Generate this file using the config TUI (`python3 main.py`), or edit it manually:
-
-```json
-{
-  "color_mode": "dark",
-  "browser": "Firefox",
-  "youtube_url": "https://www.youtube.com/watch?v=BN1WwnEDWAM&list=RDBN1WwnEDWAM&start_radio=1",
-  "workspace_dev": 1,
-  "workspace_media": 9,
-  "apps": {
-    "browser": "Firefox",
-    "ide": "Cursor",
-    "music": "Spotify",
-    "notes": "Obsidian",
-    "terminal": "Ghostty"
-  },
-  "states": {},
-  "trigger": "clap"
-}
-```
-
-| Key | Description |
-|---|---|
-| `color_mode` | `dark` or `light` — set via the config TUI |
-| `youtube_url` | The YouTube link to open on launch |
-| `browser` | Browser app name (Firefox, Safari, Arc, etc.) |
-| `workspace_dev` | Aerospace workspace number for dev apps |
-| `workspace_media` | Aerospace workspace number for YouTube |
-| `apps` | Default app per category, set via the config TUI |
-| `states` | Named workspace states (triggers and actions TBD) |
-| `trigger` | `clap`, `hotkey`, or `both` |
-
----
-
-## Setup
-
-### 1. Install dependencies
-
-```bash
-pip install -r requirements.txt
-```
-
-### 2. Make scripts executable
-
-```bash
-chmod +x wendy.sh scenes/workspace1.sh scenes/workspace9.sh
-```
-
-### 3. Configure Wendy
-
-```bash
 python3 main.py
 ```
 
-This launches the config TUI where you can set your color mode, default apps, and workspace states. Settings are saved to `settings.json`.
+No installs needed — `curses` is built into Python on macOS.
 
-### 4. Grant microphone permission
+## Menu
 
-Make sure your terminal app has microphone access:
+- **Modes** — pick one and Wendy runs it in this terminal (e.g. `claude`). When it exits, press enter to go back to Wendy.
+- **Jobs** — saved bash commands, run now or daily.
+- **Config** — settings for other apps. **Config → Firefox** has the theme switcher.
 
-**System Settings → Privacy & Security → Microphone → enable for Terminal**
+## Modes
 
-### 5. Run Wendy
+Modes live in `settings.json` as `"name": "shell command"`:
 
-```bash
-python3 listeners/clap_detector.py
+```json
+"modes": {
+  "Claude": "claude",
+  "Claude (resume last)": "claude --continue",
+  "Shell": "$SHELL"
+}
 ```
 
-Then clap twice — Wendy will show the splash screen and handle the rest.
+Add your own, e.g. `"Server": "cd ~/SharedComputing && ./run.sh"`.
 
----
+## Jobs
 
-## Clap Detector Settings
+Saved bash commands (e.g. a daily git push). In the Jobs screen:
 
-You can tune the detector in `listeners/clap_detector.py`:
+| key   | does                                         |
+| ----- | -------------------------------------------- |
+| enter | run the job now                              |
+| n     | new job — name, command, daily time (HH:MM)  |
+| t     | change a job's time (empty = manual only)    |
+| l     | view the job's log                           |
+| d     | delete                                       |
 
-| Variable | Default | Description |
-|---|---|---|
-| `THRESHOLD` | `0.25` | Amplitude level to count as a clap (0.0–1.0) |
-| `CLAP_WINDOW` | `1.2s` | Max time between clap 1 and clap 2 |
-| `COOLDOWN` | `3.0s` | Ignore period after a successful trigger |
+Jobs with a time are scheduled in your `crontab` (Wendy only touches its own
+`# >>> wendy jobs >>>` block). Each run is logged to `~/.wendy/logs/<job>.log`,
+and the Jobs screen shows the last run and whether it failed.
 
-If Wendy triggers too easily, raise `THRESHOLD`. If she misses claps, lower it.
+Note: cron only runs while the Mac is awake.
 
----
+## Firefox themes
 
-## Requirements
+`scripts/firefox-theme.sh` switches your Minecraft Firefox themes. Wendy runs it from **Config → Firefox**:
 
-- macOS
-- [Aerospace](https://github.com/nikitabobko/AeroSpace) window manager installed and configured
-- `aerospace` CLI available in your PATH (check with `which aerospace`)
-- Python 3.8+
-- Cursor, Terminal, Finder (or any apps listed in `settings.json`)
+| item            | does                                          |
+| --------------- | --------------------------------------------- |
+| Random theme    | picks nether or overworld, then opens Firefox |
+| Nether theme    | nether theme on                               |
+| Overworld theme | overworld theme on                            |
+| Theme off       | back to normal Firefox                        |
+| Status          | shows which theme is on                       |
 
----
+Firefox only loads the theme when it starts, so restart Firefox (⌘Q) after switching.
+Theme files are read from `~/Documents/firefox-chrome-backup/chrome`
+(change with `WENDY_FIREFOX_THEMES=/other/path`).
+
+## Structure
+
+```
+main.py                 # entry point — the TUI
+settings.json           # modes, jobs
+config/
+├── welcome.py          # welcome screen (logo + greeting) on launch
+├── modes.py            # Modes screen — runs commands
+├── jobs.py             # Jobs screen — saved/scheduled bash commands
+├── config_menu.py      # Config screen (Firefox, ...)
+├── firefox.py          # Config → Firefox: theme switcher items
+├── menu_list.py        # shared list screen used by Config
+├── palette.py          # colors
+└── settings_store.py   # load / save settings.json
+scripts/
+└── firefox-theme.sh    # nether | overworld | random | off | status
+documentation/          # per-file notes
+```
 
 ## License
 

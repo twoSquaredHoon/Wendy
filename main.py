@@ -1,15 +1,15 @@
 import curses
 import random
 import os
-from config.colorpicker import pick_color_mode
 from config.palette import make_palette
+from config.welcome import show_welcome
 
 os.environ.setdefault("ESCDELAY", "0")
 
 MENU_ITEMS = [
-    "Apps",
-    "Color Mode",
-    "States",
+    "Modes",
+    "Jobs",
+    "Config",
 ]
 
 JOKES = [
@@ -28,10 +28,10 @@ JOKES = [
 ]
 
 def run(stdscr):
-    color_mode = pick_color_mode(stdscr)
+    show_welcome(stdscr)
 
     curses.curs_set(0)
-    p = make_palette(color_mode)
+    p = make_palette()
 
     cursor = 0
     message = random.choice(JOKES)
@@ -101,36 +101,25 @@ def run(stdscr):
             is_update = False
         elif key in (curses.KEY_ENTER, 10, 13):
             selected = MENU_ITEMS[cursor]
-            if selected == "States":
-                from config.states import run_states
-                changed = run_states(stdscr, color_mode)
-                p = make_palette(color_mode)
-                if changed:
-                    message = "States saved."
+            if selected == "Modes":
+                from config.modes import run_modes
+                last_run = run_modes(stdscr)
+                if last_run:
+                    message = f"Back from {last_run}."
                     is_update = True
                 else:
                     message = random.choice(JOKES)
                     is_update = False
-            elif selected == "Apps":
-                from config.apps import run_apps
-                changed = run_apps(stdscr, color_mode)
-                p = make_palette(color_mode)
-                if changed:
-                    message = "App preferences updated."
-                    is_update = True
-                else:
-                    message = random.choice(JOKES)
-                    is_update = False
-            elif selected == "Color Mode":
-                from config.colormode import run_color_mode
-                changed = run_color_mode(stdscr, color_mode)
-                if changed:
-                    color_mode = "light" if color_mode == "dark" else "dark"
-                    message = f"Switched to {color_mode} mode. Good choice."
-                else:
-                    message = "Same as before. No judgment."
-                p = make_palette(color_mode)
-                is_update = True
+            elif selected == "Jobs":
+                from config.jobs import run_jobs
+                run_jobs(stdscr)
+                message = random.choice(JOKES)
+                is_update = False
+            elif selected == "Config":
+                from config.config_menu import run_config
+                run_config(stdscr)
+                message = random.choice(JOKES)
+                is_update = False
         elif key in (ord("q"), 27):
             break
 

@@ -1,7 +1,7 @@
 import curses
 
 
-def make_palette(color_mode: str) -> dict:
+def make_palette() -> dict:
     curses.start_color()
     curses.use_default_colors()
 
@@ -14,15 +14,9 @@ def make_palette(color_mode: str) -> dict:
         custom_red  = curses.COLOR_RED
         custom_pink = curses.COLOR_MAGENTA
 
-    if color_mode == "dark":
-        curses.init_pair(1, custom_red,  -1)  # RED
-        curses.init_pair(2, custom_pink, -1)  # PINK
-        curses.init_pair(3, curses.COLOR_WHITE, -1)  # NORM
-
-    else:
-        curses.init_pair(1, custom_red,  -1)  # RED
-        curses.init_pair(2, custom_pink, -1)  # PINK
-        curses.init_pair(3, curses.COLOR_BLACK, -1)  # NORM
+    curses.init_pair(1, custom_red,  -1)  # RED
+    curses.init_pair(2, custom_pink, -1)  # PINK
+    curses.init_pair(3, curses.COLOR_WHITE, -1)  # NORM
 
     return {
         "RED":  curses.color_pair(1) | curses.A_BOLD,

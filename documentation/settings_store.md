@@ -1,35 +1,19 @@
-# Wendy — Settings persistence (`config/settings_store.py`)
+# settings_store.py
 
-**Code conventions (paths, constants, `save_settings` newline, typing):** `documentation/config-style.md` → **`settings_store.py`**.
+Single module for **`settings.json`** path, **normalization**, and **read/write**, used by every screen.
 
-## Purpose
-
-Single module for **`settings.json`** path, **normalization**, and **read/write** used by `config/apps.py`, `config/states.py`, and `config/colormode.py`.
-
-## Path
-
-`SETTINGS_PATH` = **`REPO_ROOT / "settings.json"`** (`REPO_ROOT` = parent of `config/`). Independent of shell cwd.
-
-## Canonical JSON (written by `save_settings`)
+## Canonical shape
 
 | Key | Type | Notes |
-|-----|------|--------|
-| `color_mode` | string | `"dark"` \| `"light"` (default `"dark"` if missing) |
-| `apps` | object | Keys: `browser`, `ide`, `music`, `notes`, `terminal` (strings, may be empty) |
-| `states` | object | State name → `{ "workspaces": { … } }` — see `documentation/states.md` |
+|-----|------|-------|
+| `modes` | object | Mode name → shell command. Defaults to `DEFAULT_MODES` (Claude, Claude resume, Shell) |
+| `jobs` | object | Job name → `{ "command": string, "time": "HH:MM" or "" }`. Defaults to `{}` |
 
-## `normalize_settings(raw)`
+## normalize_settings
 
-- Ensures every **`APP_KEYS`** slot exists under **`apps`**; fills from nested **`apps`** or legacy **top-level** `browser`, `ide`, …
-- Ignores legacy **`apps`** when it was a **list**.
-- **`states`** defaults to `{}`.
+Fills in any missing key with its default. Unknown keys are dropped on save.
 
-## `load_settings()` / `save_settings()`
+## load_settings / save_settings
 
-- **Load** — parse JSON, return normalized dict; on error or missing file, return defaults.
-- **Save** — merge through `normalize_settings`, then write **only** the three canonical keys (no passthrough extras like `youtube_url`).
-
-## Principles
-
-- One file, one shape for the TUI.
-- Repo-root path for predictable tooling.
+- `load_settings()` — returns defaults if the file is missing or not valid JSON.
+- `save_settings(settings)` — writes the normalized shape, `indent=2`, trailing newline.
