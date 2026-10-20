@@ -18,4 +18,4 @@ def run_firefox(stdscr) -> None:
         (label, detail, lambda s, cmd=cmd: run_mode(s, cmd))
         for label, detail, cmd in FIREFOX_ITEMS
     ]
-    list_screen(stdscr, "config  /  firefox", items, "↑↓ navigate   enter run   esc back")
+    list_screen(stdscr, "script toggles  /  firefox", items, "↑↓ navigate   enter run   esc back")

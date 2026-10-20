@@ -9,8 +9,15 @@ os.environ.setdefault("ESCDELAY", "0")
 MENU_ITEMS = [
     "Modes",
     "Jobs",
-    "Config",
+    "Script Toggles",
+    "Dashboard",
+    "Projects",
+    "Remote",
+    "Notes",
 ]
+
+# not built yet — shown with "(soon)"
+SOON_ITEMS = {"Dashboard", "Projects", "Remote", "Notes"}
 
 JOKES = [
     "I once sorted a list alphabetically. Still my greatest achievement.",
@@ -76,6 +83,8 @@ def run(stdscr):
                 safe(row, 4, item, p["RED"])
             else:
                 safe(row, 4, item, p["NORM"])
+            if item in SOON_ITEMS:
+                safe(row, 4 + len(item), "  (soon)", p["DIM"])
 
         # footer
         try:
@@ -115,9 +124,29 @@ def run(stdscr):
                 run_jobs(stdscr)
                 message = random.choice(JOKES)
                 is_update = False
-            elif selected == "Config":
+            elif selected == "Script Toggles":
                 from config.config_menu import run_config
                 run_config(stdscr)
+                message = random.choice(JOKES)
+                is_update = False
+            elif selected == "Dashboard":
+                from config.dashboard import run_dashboard
+                run_dashboard(stdscr)
+                message = random.choice(JOKES)
+                is_update = False
+            elif selected == "Projects":
+                from config.projects import run_projects
+                run_projects(stdscr)
+                message = random.choice(JOKES)
+                is_update = False
+            elif selected == "Remote":
+                from config.remote import run_remote
+                run_remote(stdscr)
+                message = random.choice(JOKES)
+                is_update = False
+            elif selected == "Notes":
+                from config.notes import run_notes
+                run_notes(stdscr)
                 message = random.choice(JOKES)
                 is_update = False
         elif key in (ord("q"), 27):

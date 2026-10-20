@@ -14,7 +14,15 @@ No installs needed — `curses` is built into Python on macOS.
 
 - **Modes** — pick one and Wendy runs it in this terminal (e.g. `claude`). When it exits, press enter to go back to Wendy.
 - **Jobs** — saved bash commands, run now or daily.
-- **Config** — settings for other apps. **Config → Firefox** has the theme switcher.
+- **Script Toggles** — bash scripts you switch on/off: **Firefox** (theme switcher) and **GitHub daily push** (toggle the daily commit).
+
+Placeholders — screens you can click through with fake data, not built yet (shown as **(soon)**):
+
+- **Dashboard** — overview (toggles, today's commit, battery/disk) and AI station (machines + services).
+- **Projects** — pick a repo → open with Claude, shell, git status, editor.
+- **Remote** — SSH into T480 / server / storage PC, League server upload + ward detection, SharedComputing training runs.
+- **Notes** — quick capture (would save to Obsidian).
+- **Script Toggles** extras — Tailscale, life-log server, demo3 server, twoSquaredTyping, dark mode, Do Not Disturb, keep awake.
 
 ## Modes
 
@@ -50,7 +58,7 @@ Note: cron only runs while the Mac is awake.
 
 ## Firefox themes
 
-`scripts/firefox-theme.sh` switches your Minecraft Firefox themes. Wendy runs it from **Config → Firefox**:
+`scripts/firefox-theme.sh` switches your Minecraft Firefox themes. Wendy runs it from **Script Toggles → Firefox**:
 
 | item            | does                                          |
 | --------------- | --------------------------------------------- |
@@ -64,6 +72,20 @@ Firefox only loads the theme when it starts, so restart Firefox (⌘Q) after swi
 Theme files are read from `~/Documents/firefox-chrome-backup/chrome`
 (change with `WENDY_FIREFOX_THEMES=/other/path`).
 
+## GitHub daily push
+
+`scripts/daily-push.sh` toggles the daily commit from your `workflows` repo
+(`~/workflows`, its LaunchAgent `com.twosquaredhoon.workflows.dailypush`).
+Wendy runs it from **Script Toggles → GitHub daily push**:
+
+| item     | does                                             |
+| -------- | ------------------------------------------------ |
+| Turn on  | load the LaunchAgent (runs at login + every hour) |
+| Turn off | unload it                                        |
+| Status   | on/off, last entries in `daily.md`, last run     |
+| Push now | run `daily_push.sh` right now                    |
+| View log | open `launchd.out.log`                           |
+
 ## Structure
 
 ```
@@ -73,13 +95,20 @@ config/
 ├── welcome.py          # welcome screen (logo + greeting) on launch
 ├── modes.py            # Modes screen — runs commands
 ├── jobs.py             # Jobs screen — saved/scheduled bash commands
-├── config_menu.py      # Config screen (Firefox, ...)
-├── firefox.py          # Config → Firefox: theme switcher items
-├── menu_list.py        # shared list screen used by Config
+├── config_menu.py      # Script Toggles screen (Firefox, GitHub daily push)
+├── firefox.py          # Script Toggles → Firefox: theme switcher items
+├── github.py           # Script Toggles → GitHub daily push items
+├── menu_list.py        # shared list screen used by Script Toggles
+├── placeholder.py      # (soon) screens, fake toggles, fake progress bar
+├── dashboard.py        # Dashboard (placeholder)
+├── projects.py         # Projects (placeholder)
+├── remote.py           # Remote (placeholder)
+├── notes.py            # Notes (placeholder)
 ├── palette.py          # colors
 └── settings_store.py   # load / save settings.json
 scripts/
-└── firefox-theme.sh    # nether | overworld | random | off | status
+├── firefox-theme.sh    # nether | overworld | random | off | status
+└── daily-push.sh       # on | off | status | now | log
 documentation/          # per-file notes
 ```
 
