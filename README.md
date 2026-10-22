@@ -1,5 +1,7 @@
 # 🤖 Wendy
 
+![Wendy splash screen](documentation/wendy.png)
+
 A terminal TUI for launching your stuff.
 
 ## Run
@@ -15,14 +17,6 @@ No installs needed — `curses` is built into Python on macOS.
 - **Modes** — pick one and Wendy runs it in this terminal (e.g. `claude`). When it exits, press enter to go back to Wendy.
 - **Jobs** — saved bash commands, run now or daily.
 - **Script Toggles** — bash scripts you switch on/off: **Firefox** (theme switcher) and **GitHub daily push** (toggle the daily commit).
-
-Placeholders — screens you can click through with fake data, not built yet (shown as **(soon)**):
-
-- **Dashboard** — overview (toggles, today's commit, battery/disk) and AI station (machines + services).
-- **Projects** — pick a repo → open with Claude, shell, git status, editor.
-- **Remote** — SSH into T480 / server / storage PC, League server upload + ward detection, SharedComputing training runs.
-- **Notes** — quick capture (would save to Obsidian).
-- **Script Toggles** extras — Tailscale, life-log server, demo3 server, twoSquaredTyping, dark mode, Do Not Disturb, keep awake.
 
 ## Modes
 
@@ -99,11 +93,6 @@ config/
 ├── firefox.py          # Script Toggles → Firefox: theme switcher items
 ├── github.py           # Script Toggles → GitHub daily push items
 ├── menu_list.py        # shared list screen used by Script Toggles
-├── placeholder.py      # (soon) screens, fake toggles, fake progress bar
-├── dashboard.py        # Dashboard (placeholder)
-├── projects.py         # Projects (placeholder)
-├── remote.py           # Remote (placeholder)
-├── notes.py            # Notes (placeholder)
 ├── palette.py          # colors
 └── settings_store.py   # load / save settings.json
 scripts/
