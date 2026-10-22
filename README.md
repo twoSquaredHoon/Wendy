@@ -1,4 +1,4 @@
-# 🤖 Wendy
+# Wendy
 
 ![Wendy splash screen](documentation/wendy.png)
 
